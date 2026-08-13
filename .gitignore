@@ -3,3 +3,5 @@
 .intellijPlatform
 build
 .omo
+.kotlin
+.run

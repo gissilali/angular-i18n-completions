@@ -24,7 +24,7 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <completion.contributor
-                language="HTML"
+                language="any"
                 implementationClass="com.silali.angularI18n.HtmlTranslationKeyCompletionContributor"/>
     </extensions>
 

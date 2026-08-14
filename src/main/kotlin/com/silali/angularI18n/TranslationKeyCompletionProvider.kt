@@ -9,6 +9,8 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import org.angular2.lang.expr.psi.Angular2Interpolation
+import java.util.Locale
+import java.util.Locale.getDefault
 
 class TranslationKeyCompletionProvider : CompletionProvider<CompletionParameters>() {
 
@@ -24,15 +26,13 @@ class TranslationKeyCompletionProvider : CompletionProvider<CompletionParameters
             PsiTreeUtil.getParentOfType(position, Angular2Interpolation::class.java) != null
 
         val project = parameters.position.project
+        val fileExtension = parameters.originalFile.virtualFile?.extension?.lowercase(getDefault())
         val translationKeysService = project.getService(TranslationKeysService::class.java)
 
 
-        LOG.info(
-            "FIRED offset=${parameters.offset} elementType=${position.node?.elementType} " +
-                    "isStringLiteral=$isStringLiteral insideInterpolation=$insideInterpolation"
-        )
+        if(fileExtension != "html" && fileExtension != "ts") return
 
-        if (!isStringLiteral || !insideInterpolation) return
+        if (!isStringLiteral) return
 
         translationKeysService.getKeys().forEach { key ->
             result.addElement(LookupElementBuilder.create(key).withInsertHandler { insertionContext, _ ->

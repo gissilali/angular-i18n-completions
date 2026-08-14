@@ -4,7 +4,7 @@ import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.patterns.PlatformPatterns
 
-class HtmlTranslationKeyCompletionContributor : CompletionContributor() {
+class TranslationKeyCompletionContributor : CompletionContributor() {
 
     init {
         extend(

@@ -22,6 +22,7 @@ class TranslationKeyCompletionProvider : CompletionProvider<CompletionParameters
         val position = parameters.position
 
         val isStringLiteral = position.node?.elementType == JSTokenTypes.STRING_LITERAL
+                || position.parent is com.intellij.lang.javascript.psi.JSLiteralExpression
         val insideInterpolation =
             PsiTreeUtil.getParentOfType(position, Angular2Interpolation::class.java) != null
 
@@ -32,11 +33,28 @@ class TranslationKeyCompletionProvider : CompletionProvider<CompletionParameters
 
         if(fileExtension != "html" && fileExtension != "ts") return
 
+        LOG.info("TranslationKeyCompletionContributor extenstion: $fileExtension and is string literal $isStringLiteral")
+
         if (!isStringLiteral) return
 
         translationKeysService.getKeys().forEach { key ->
             result.addElement(LookupElementBuilder.create(key).withInsertHandler { insertionContext, _ ->
-                insertionContext.document.insertString(insertionContext.tailOffset, "\"")
+                val document = insertionContext.document
+                val openingQuote = document.getText(
+                    com.intellij.openapi.util.TextRange(
+                        insertionContext.startOffset - 1,
+                        insertionContext.startOffset
+                    )
+                )
+                val charAfter = document.getText(
+                    com.intellij.openapi.util.TextRange(
+                        insertionContext.tailOffset,
+                        insertionContext.tailOffset + 1
+                    )
+                )
+                if (charAfter != openingQuote) {
+                    document.insertString(insertionContext.tailOffset, openingQuote)
+                }
                 insertionContext.editor.caretModel.moveToOffset(insertionContext.tailOffset)
             })
         }

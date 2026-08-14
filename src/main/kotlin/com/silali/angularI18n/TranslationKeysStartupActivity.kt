@@ -22,7 +22,7 @@ class TranslationKeysStartupActivity : ProjectActivity {
                         keys
                     )
 
-                    LOG.info("HtmlTranslationKeyCompletionContributor loaded ${keys.size} keys")
+                    LOG.info("HtmlTranslationKeyCompletionContributor loaded ${keys.size} keys - v1.0.0")
 
                 }
             }

@@ -23,6 +23,7 @@
     <!-- Extensions defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="com.silali.angularI18n.TranslationKeysStartupActivity"/>
         <completion.contributor
                 language="any"
                 implementationClass="com.silali.angularI18n.HtmlTranslationKeyCompletionContributor"/>

@@ -23,6 +23,10 @@ class TranslationKeyCompletionProvider : CompletionProvider<CompletionParameters
         val insideInterpolation =
             PsiTreeUtil.getParentOfType(position, Angular2Interpolation::class.java) != null
 
+        val project = parameters.position.project
+        val translationKeysService = project.getService(TranslationKeysService::class.java)
+
+
         LOG.info(
             "FIRED offset=${parameters.offset} elementType=${position.node?.elementType} " +
                     "isStringLiteral=$isStringLiteral insideInterpolation=$insideInterpolation"
@@ -30,25 +34,15 @@ class TranslationKeyCompletionProvider : CompletionProvider<CompletionParameters
 
         if (!isStringLiteral || !insideInterpolation) return
 
-        FAKE_TRANSLATION_KEYS.forEach { key ->
-            result.addElement(LookupElementBuilder.create(key))
+        translationKeysService.getKeys().forEach { key ->
+            result.addElement(LookupElementBuilder.create(key).withInsertHandler { insertionContext, _ ->
+                insertionContext.document.insertString(insertionContext.tailOffset, "\"")
+                insertionContext.editor.caretModel.moveToOffset(insertionContext.tailOffset)
+            })
         }
     }
 
     companion object {
         private val LOG = Logger.getInstance(TranslationKeyCompletionProvider::class.java)
-
-        private val FAKE_TRANSLATION_KEYS = listOf(
-            "AUTH.SIGN-IN",
-            "AUTH.SIGN-OUT",
-            "AUTH.FORGOT-PASSWORD",
-            "CARDS.OPERATIONS.COMPLETE-ISSUANCE",
-            "CARDS.OPERATIONS.BLOCK-CARD",
-            "CARDS.OPERATIONS.REISSUE-CARD",
-            "ACCOUNTS.SUMMARY.BALANCE",
-            "ACCOUNTS.SUMMARY.RECENT-TRANSACTIONS",
-            "COMMON.ACTIONS.SAVE",
-            "COMMON.ACTIONS.CANCEL"
-        )
     }
 }
